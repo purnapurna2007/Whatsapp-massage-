@@ -7,12 +7,12 @@ const app = express();
 app.use(bodyParser.json());
 
 // Twilio credentials
-const accountSid = 'YOUR_TWILIO_ACCOUNT_SID';
-const authToken = 'YOUR_TWILIO_AUTH_TOKEN';
+const accountSid = 'AC3703d9bed80e3a199b5d4abc7007d6f4';
+const authToken = '0cb4f4d9765b6217df5ea8c6bcb7e939';
 const client = new twilio(accountSid, authToken);
 
 // WhatsApp Number (Twilio Verified Number)
-const fromWhatsApp = 'whatsapp:+14155238886';
+const fromWhatsApp = 'whatsapp:+19382016013';
 
 app.post('/send-whatsapp', (req, res) => {
     const { phoneNumber, message } = req.body;
