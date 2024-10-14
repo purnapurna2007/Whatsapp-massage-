@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Message Sender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input, textarea {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Send WhatsApp Message</h1>
+        <input type="text" id="phoneNumber" placeholder="Enter phone number (e.g., +94789958225)">
+        <textarea id="message" rows="4" placeholder="Enter your message"></textarea>
+        <button onclick="sendMessage()">Send Message</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var phoneNumber = document.getElementById('phoneNumber').value;
+            var message = document.getElementById('message').value;
+
+            if (phoneNumber === '' || message === '') {
+                document.getElementById('status').innerHTML = 'Please enter both phone number and message!';
+                return;
+            }
+
+            document.getElementById('status').innerHTML = 'Sending...';
+
+            fetch('/send-whatsapp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phoneNumber: phoneNumber, message: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('status').innerHTML = 'Message sent successfully!';
+                } else {
+                    document.getElementById('status').innerHTML = 'Error sending message.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('status').innerHTML = 'Error sending message.';
+            });
+        }
+    </script>
+
+</body>
+</html>
