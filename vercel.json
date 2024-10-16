@@ -8,7 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/send-whatsapp",
+      "src": "/api/send-whatsapp",
       "dest": "/server.js"
     }
   ]
