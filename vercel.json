@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/api/send-whatsapp",
-      "methods": ["POST"], // Ensure it's set to handle POST requests
+      "methods": ["POST"],
       "dest": "/server.js"
     }
   ],
