@@ -3,10 +3,10 @@ const express = require('express');
 const qrcode = require('qrcode-terminal');
 const app = express();
 
-let qrCodeData = '';  // To store the raw QR code string
-let client = null;    // WhatsApp client initialized only when button is clicked
+let qrCodeData = '';  // Store the raw QR code string here
+let client = null;    // WhatsApp client will be initialized when the user requests the QR
 
-// Serve the webpage with the Generate QR button
+// Serve the webpage with the "Generate QR" button
 app.get('/', (req, res) => {
     res.send(`
         <html>
@@ -32,8 +32,11 @@ app.get('/', (req, res) => {
                                     value: data.qr
                                 });
                             } else {
-                                alert('QR code generation failed.');
+                                alert(data.message || 'QR code generation failed.');
                             }
+                        })
+                        .catch(error => {
+                            alert('An error occurred: ' + error.message);
                         });
                 }
             </script>
@@ -44,17 +47,21 @@ app.get('/', (req, res) => {
 
 // Endpoint to start WhatsApp client and generate QR code
 app.get('/start-whatsapp', (req, res) => {
-    if (!client) {
-        client = new Client();
+    // If client is already running, return the existing QR code
+    if (client && qrCodeData) {
+        return res.json({ qr: qrCodeData });
+    }
 
+    try {
+        client = new Client();
+        
         client.on('qr', (qr) => {
-            qrCodeData = qr;
-            qrcode.generate(qr, { small: true });
-            console.log('QR Code generated.');
+            qrCodeData = qr;  // Store the raw QR code string
+            console.log('QR code generated successfully.');
         });
 
         client.on('ready', () => {
-            console.log('WhatsApp bot is ready!');
+            console.log('WhatsApp client is ready!');
         });
 
         client.on('message', message => {
@@ -64,14 +71,12 @@ app.get('/start-whatsapp', (req, res) => {
         });
 
         client.initialize();
+        
+        res.json({ message: 'WhatsApp client started. Please wait for the QR code.' });
 
-        res.json({ status: 'WhatsApp client started, QR code will be generated soon.' });
-    } else if (qrCodeData) {
-        // If QR code already exists
-        res.json({ qr: qrCodeData });
-    } else {
-        // If client is initializing but QR is not yet available
-        res.json({ status: 'QR code is being generated, please try again in a few moments.' });
+    } catch (error) {
+        console.error('Error initializing WhatsApp client:', error);
+        res.status(500).json({ message: 'Failed to initialize WhatsApp client.' });
     }
 });
 
