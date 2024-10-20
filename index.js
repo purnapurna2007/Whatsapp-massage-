@@ -22,7 +22,7 @@ client.on('message', message => {
 
 client.initialize();
 
-// For Vercel to keep it alive
+// For Render to keep the bot alive
 app.get('/', (req, res) => {
     res.send('WhatsApp bot is running.');
 });
