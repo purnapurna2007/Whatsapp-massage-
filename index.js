@@ -1,7 +1,6 @@
 const { Client, MessageMedia } = require('whatsapp-web.js');
 const express = require('express');
 const qrcode = require('qrcode');
-const fs = require('fs');
 const path = require('path');
 const app = express();
 
@@ -68,24 +67,25 @@ app.get('/start-whatsapp', (req, res) => {
         client.on('message', async (message) => {
             if (message.body.toLowerCase() === 'link') {
                 try {
-                    // Send a text reply
-                    await message.reply('*𝗗𝗘𝗫𝗧𝗘𝗥 ┃ AUTO STATUS SEEN* ♨
+                    // Load an image from the file system (use any image path or URL)
+                    const imagePath = path.join(__dirname, '29dd5eb430ec9701f9d2e8908594eaee.jpg'); // Replace with your image path
+                    const media = MessageMedia.fromFilePath(imagePath);
+                    
+                    // Text caption to be sent with the image
+                    const caption = `*𝗗𝗘𝗫𝗧𝗘𝗥 ┃ AUTO STATUS SEEN* ♨
 
 https://wa.me/message/5AUBZLIL7HM6D1
 
 [____________________]
 
 *DEXTER LINK WITH DEXTER CONTACT*😾
-*DEXTER  PROGRAMS* 💀');
-                    
-                    // Load an image from the file system (use any image path or URL)
-                    const imagePath = path.join(__dirname, '29dd5eb430ec9701f9d2e8908594eaee.jpg'); // Place your image in the same folder as the script
-                    const media = MessageMedia.fromFilePath(imagePath);
+*DEXTER  PROGRAMS* 💀`;
 
-                    // Send the image along with the reply
-                    await client.sendMessage(message.from, media);
+                    // Send the image along with the caption
+                    await client.sendMessage(message.from, media, { caption: caption });
+
                 } catch (error) {
-                    console.error('Failed to send image:', error);
+                    console.error('Failed to send image with caption:', error);
                 }
             }
         });
