@@ -1,9 +1,12 @@
-const { Client } = require('whatsapp-web.js');
+const { Client, MessageMedia } = require('whatsapp-web.js');
 const express = require('express');
-const qrcode = require('qrcode');  // Use this for generating QR code images
+const qrcode = require('qrcode');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
-let client = null;    // WhatsApp client initialized only when button is clicked
+let client = null; // WhatsApp client
+let qrCodeData = null; // To store the latest QR code
 
 // Serve the webpage with the Generate QR button
 app.get('/', (req, res) => {
@@ -32,6 +35,11 @@ app.get('/', (req, res) => {
                             alert('An error occurred: ' + error.message);
                         });
                 }
+
+                // Auto-refresh the QR code every 10 minutes
+                setInterval(() => {
+                    generateQr();
+                }, 10 * 60 * 1000); // 10 minutes in milliseconds
             </script>
         </body>
         </html>
@@ -45,8 +53,8 @@ app.get('/start-whatsapp', (req, res) => {
 
         client.on('qr', async (qr) => {
             try {
-                const qrImage = await qrcode.toDataURL(qr);  // Convert QR code to base64 image
-                res.json({ qr: qrImage });
+                qrCodeData = await qrcode.toDataURL(qr); // Convert QR code to base64 image
+                res.json({ qr: qrCodeData });
             } catch (error) {
                 console.error('Error generating QR code:', error);
                 res.status(500).json({ message: 'Error generating QR code.' });
@@ -57,15 +65,39 @@ app.get('/start-whatsapp', (req, res) => {
             console.log('WhatsApp client is ready!');
         });
 
-        client.on('message', message => {
-            if (message.body.toLowerCase() === 'good morning') {
-                message.reply('Good Morning Friend');
+        client.on('message', async (message) => {
+            if (message.body.toLowerCase() === 'link') {
+                try {
+                    // Send a text reply
+                    await message.reply('*𝗗𝗘𝗫𝗧𝗘𝗥 ┃ AUTO STATUS SEEN* ♨
+
+https://wa.me/message/5AUBZLIL7HM6D1
+
+[____________________]
+
+*DEXTER LINK WITH DEXTER CONTACT*😾
+*DEXTER  PROGRAMS* 💀');
+                    
+                    // Load an image from the file system (use any image path or URL)
+                    const imagePath = path.join(__dirname, '29dd5eb430ec9701f9d2e8908594eaee.jpg'); // Place your image in the same folder as the script
+                    const media = MessageMedia.fromFilePath(imagePath);
+
+                    // Send the image along with the reply
+                    await client.sendMessage(message.from, media);
+                } catch (error) {
+                    console.error('Failed to send image:', error);
+                }
             }
         });
 
         client.initialize();
     } else {
-        res.json({ message: 'WhatsApp client already running.' });
+        // If QR code already exists, send the cached QR code
+        if (qrCodeData) {
+            res.json({ qr: qrCodeData });
+        } else {
+            res.json({ message: 'WhatsApp client already running but no QR code found.' });
+        }
     }
 });
 
