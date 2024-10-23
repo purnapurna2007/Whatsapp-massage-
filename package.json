@@ -1,29 +1,18 @@
 {
-  "name": "whatsapp-qr-code-generator",
+  "name": "javascript-obfuscator",
   "version": "1.0.0",
-  "description": "A simple web app to generate WhatsApp QR codes",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"   
-
-
+    "start": "node server.js",
+    "build": "echo 'No build step needed'"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "whatsapp-web.js": "^1.22.1",
-    "qrcode": "^1.4.4"  
+    "adm-zip": "^0.5.9",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.4.0",
+    "javascript-obfuscator": "^2.20.0"
   },
   "engines": {
-    "node": ">=14.x"
-  },
-  "keywords": [
-    "whatsapp",
-    "qr",
-    "qr-code",
-    "generator",
-    "web-app"
-  ],
-  "author": "Your Name",
-  "license": "ISC"
+    "node": "18.x"
+  }
 }
