@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Obfuscator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Obfuscator</h1>
+    <p>ZIP ගොනුවක් උඩුගත කරන්න:</p>
+    <input type="file" id="zipFile" accept=".zip">
+    <button onclick="uploadZip()">උඩුගත කරන්න</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/adm-zip@0.5.9/adm-zip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.20.0/dist/index.iife.min.js"></script>
+    <script>
+        async function uploadZip() {
+            const fileInput = document.getElementById('zipFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("ZIP ගොනුවක් තෝරන්න!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'obfuscated.zip';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                alert("උඩුගත කිරීමේදී දෝෂයක් විය.");
+            }
+        }
+
+        // Handle the ZIP file upload and obfuscation
+        async function handleFileUpload(zipFile) {
+            const zip = new AdmZip(zipFile);
+            const tempDir = 'temp'; // Change this to a method for handling files on the server
+
+            zip.extractAllTo(tempDir, true);
+            const files = fs.readdirSync(tempDir);
+
+            files.forEach(file => {
+                if (file.endsWith('.js')) {
+                    const filePath = path.join(tempDir, file);
+                    const code = fs.readFileSync(filePath, 'utf8');
+                    const obfuscatedCode = JavaScriptObfuscator.obfuscate(code).getObfuscatedCode();
+                    fs.writeFileSync(filePath, obfuscatedCode);
+                }
+            });
+
+            // Create a new zip with obfuscated files and return it
+            const outputZip = new AdmZip();
+            files.forEach(file => {
+                outputZip.addLocalFile(path.join(tempDir, file));
+            });
+
+            const outputZipPath = path.join(__dirname, 'uploads', 'obfuscated.zip');
+            outputZip.writeZip(outputZipPath);
+        }
+    </script>
+</body>
+</html>
