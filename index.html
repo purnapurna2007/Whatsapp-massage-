@@ -16,12 +16,12 @@
             min-height: 100vh;
             background-image: 
                 linear-gradient(135deg, rgba(76, 0, 255, 0.8) 0%, rgba(109, 0, 255, 0.8) 100%),
-                url('https://i.ibb.co/9qWjfY9/d2de6ba99f8d529e3ca04f43ecfeeb1f.jpg');
+                url('');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             padding: 2rem;
-            color: ;
+            color: #2c3e50;
         }
 
         .container {
@@ -32,6 +32,7 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(0);
             animation: float 6s ease-in-out infinite;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -203,14 +204,14 @@
 
         .bg-upload label {
             cursor: pointer;
-            color: #4a00e0;
+            color: yellow;
             font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Text to JSON Converter</h2>
+        <h2>Text to JSON Converter CREATE BY DEXTER</h2>
         
         <div class="input-container">
             <textarea id="message" placeholder="Enter your text here..."></textarea>
@@ -257,35 +258,38 @@
             const message = document.getElementById('message').value;
             
             setTimeout(() => {
-                const formattedMessage = JSON.stringify({ text: message.replace(/\n/g, "\\n") }, null, 2);
+                const formattedMessage = message.replace(/\n/g, "\\n");
                 document.getElementById('jsonOutput').textContent = formattedMessage;
                 hideLoading();
             }, 800);
         }
 
         function copyToClipboard() {
-            const output = document.getElementById('jsonOutput').textContent;
-            navigator.clipboard.writeText(output).then(() => {
-                showSuccessMessage();
+            const jsonOutput = document.getElementById('jsonOutput').textContent;
+            navigator.clipboard.writeText(jsonOutput).then(() => {
+                const successMessage = document.getElementById('successMessage');
+                successMessage.classList.add('show');
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
             });
         }
 
-        function showSuccessMessage() {
-            const message = document.getElementById('successMessage');
-            message.classList.add('show');
-            setTimeout(() => {
-                message.classList.remove('show');
-            }, 2000);
-        }
-
-        document.getElementById('bgImageInput').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.body.style.backgroundImage = 
-                    `linear-gradient(135deg, rgba(76, 0, 255, 0.8) 0%, rgba(109, 0, 255, 0.8) 100%), url('${e.target.result}')`;
-            };
-            reader.readAsDataURL(file);
+        // Background Image Change Functionality
+        document.getElementById('bgImageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.body.style.backgroundImage = `
+                        linear-gradient(135deg, rgba(76, 0, 255, 0.8) 0%, rgba(109, 0, 255, 0.8) 100%),
+                        url(${event.target.result})
+                    `;
+                }
+                reader.readAsDataURL(file);
+            }
         });
     </script>
 </body>
