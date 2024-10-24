@@ -1,69 +1,307 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JavaScript Obfuscator</title>
+    <title>Convert Text to JSON DEXTER </title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-image: url("https://telegra.ph/file/fbee2804c989ef2f910b4.jpg"); 
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.5s ease;
+    }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: float 6s ease-in-out infinite;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h2 {
+            color: #4a00e0;
             text-align: center;
-            padding: 50px;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(45deg, #4a00e0, #8e2de2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        input[type="file"] {
-            margin: 20px 0;
+
+        .input-container {
+            position: relative;
+            margin-bottom: 2rem;
         }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 1rem;
+            border: 2px solid rgba(74, 0, 224, 0.2);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            resize: vertical;
+            backdrop-filter: blur(5px);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4a00e0;
+            box-shadow: 0 0 15px rgba(74, 0, 224, 0.2);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
         button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
+            padding: 0.8rem 1.5rem;
             border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease-out, height 0.6s ease-out;
+        }
+
+        button:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .convert-btn {
+            background: linear-gradient(45deg, #4a00e0, #8e2de2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 0, 224, 0.3);
+        }
+
+        .copy-btn {
+            background: linear-gradient(45deg, #00c853, #64dd17);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+        }
+
+        .loading {
+            display: none;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .loading div {
+            width: 10px;
+            height: 10px;
+            margin: 0 5px;
+            background: #4a00e0;
+            border-radius: 50%;
+            animation: bounce 0.5s ease-in-out infinite;
+        }
+
+        .loading div:nth-child(2) { animation-delay: 0.1s; }
+        .loading div:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .output-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid rgba(74, 0, 224, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #2c3e50;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.5;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #00c853, #64dd17);
+            color: white;
+            border-radius: 8px;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .success-message.show {
+            transform: translateX(0);
+        }
+
+        /* Custom Background Image Upload */
+        .bg-upload {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        #bgImageInput {
+            display: none;
+        }
+
+        .bg-upload label {
+            cursor: pointer;
+            color: #4a00e0;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <h1>JavaScript Obfuscator</h1>
-    <p>ZIP ගොනුවක් උඩුගත කරන්න:</p>
-    <input type="file" id="zipFile" accept=".zip">
-    <button onclick="uploadZip()">උඩුගත කරන්න</button>
+    <div class="container">
+        <h2>Text to JSON Converter power by dexter 💀</h2>
+        
+        <div class="input-container">
+            <textarea id="message" placeholder="*╭────────────⊶*
+*│* *ɪ ᴀᴍ  ʀᴇᴀʟ ᴅᴇxᴛᴇʀ*
+*╰────────────⊶*
+
+*╭────────────⊶*
+*│* ○ `ɴᴀᴍᴇ   │ DEXTER`
+*│* ○ `ꜰʀᴏᴍ     │ᴀᴍᴘᴀʀᴀ`
+*│* ○ `ᴀɢᴇ     │+17`
+*╰─────────────⊶*
+*────────────⊶*
+*╭──────────⊶*
+*│❮ Send me your name and age*  
+*│through a massage and I will save*
+*│you  ❯*
+*╰──────────⊶*"></textarea>
+        </div>
+
+        <div class="button-container">
+            <button class="convert-btn" onclick="convertToJson()">Convert to JSON</button>
+            <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div class="output-container">
+            <pre id="jsonOutput"></pre>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        Copied to clipboard!
+    </div>
+
+    <div class="bg-upload">
+        <input type="file" id="bgImageInput" accept="image/*">
+        <label for="bgImageInput">Change Background Image</label>
+    </div>
 
     <script>
-        async function uploadZip() {
-            const fileInput = document.getElementById('zipFile');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                alert("ZIP ගොනුවක් තෝරන්න!");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const response = await fetch('/upload', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'obfuscated.zip';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            } else {
-                alert("උඩුගත කිරීමේදී දෝෂයක් විය.");
-            }
+        function showLoading() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
         }
+
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'none';
+        }
+
+        function convertToJson() {
+            showLoading();
+            const message = document.getElementById('message').value;
+            
+            setTimeout(() => {
+                const formattedMessage = JSON.stringify({ text: message.replace(/\n/g, "\\n") }, null, 2);
+                document.getElementById('jsonOutput').textContent = formattedMessage;
+                hideLoading();
+            }, 800);
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('jsonOutput').textContent;
+            navigator.clipboard.writeText(output).then(() => {
+                showSuccessMessage();
+            });
+        }
+
+        function showSuccessMessage() {
+            const message = document.getElementById('successMessage');
+            message.classList.add('show');
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 2000);
+        }
+
+        document.getElementById('bgImageInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.body.style.backgroundImage = 
+                    `linear-gradient(135deg, rgba(76, 0, 255, 0.8) 0%, rgba(109, 0, 255, 0.8) 100%), url('${e.target.result}')`;
+            };
+            reader.readAsDataURL(file);
+        });
     </script>
 </body>
 </html>
